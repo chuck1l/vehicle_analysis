@@ -4,6 +4,7 @@ from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 
 
 def get_price_prediction(df, df_final, y):
@@ -70,12 +71,17 @@ def get_price_prediction(df, df_final, y):
     rmse = np.sqrt(mean_absolute_error(y_hat, y_test))
     print(rmse)
 
+    X_test = X_test.reset_index()
+    X_test['PriceTrue'] = y_test
+    X_test['PricePredicted'] = y_hat
+    df_test_out = X_test[['ListingID', 'PriceTrue', 'PricePredicted']]
+
     X_final = X_final.reset_index()
     X_final['PricePredicted'] = y_final
     X_final['PricePredicted'] = X_final['PricePredicted'].round(2)
     df_out = X_final[['ListingID', 'PricePredicted']] 
 
-    return df_out
+    return df_out, df_test_out
 
 if __name__ == '__main__':
 

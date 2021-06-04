@@ -36,11 +36,14 @@ cols = df.columns
 df[cols] = df[cols].astype(float).round(2)
 df_final[cols] = df_final[cols].astype(float).round(2)
 
-y_hat_price = get_price_prediction(df, df_final, y_price)
-y_hat_trim = get_trim_prediction(df, df_final, y_trim)
+y_hat_price, df_test_price = get_price_prediction(df, df_final, y_price)
+y_hat_trim, df_test_trim = get_trim_prediction(df, df_final, y_trim)
 
 results = pd.merge(y_hat_trim, y_hat_price, how='left', left_on='ListingID', right_on='ListingID')
-results.to_csv('../prediction_results.csv')
+results.to_csv('../prediction_results.csv', index=False)
+
+testing_results = pd.merge(df_test_trim, df_test_price, how='outer', left_on='ListingID', right_on='ListingID')
+testing_results.to_csv('../testing_results_df.csv', index=False)
 
 breakpoint()
 print('stop here')

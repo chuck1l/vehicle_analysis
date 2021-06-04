@@ -5,6 +5,7 @@ from confusion_matrix_plotting import create_cm_plot
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 
 
 def get_trim_prediction(df, df_final, y):
@@ -70,13 +71,26 @@ def get_trim_prediction(df, df_final, y):
     y_hat = xgb_model.predict(X_test)
     y_final = xgb_model.predict(X_final)
 
-    #create_cm_plot(y_test, y_hat)
+    X_test = X_test.reset_index()
+    X_test['TrimTrue'] = y_test
+    X_test['TrimPredicted'] = y_hat
+    df_test_out = X_test[['ListingID', 'TrimTrue', 'TrimPredicted']]
 
     X_final = X_final.reset_index()
     X_final['TrimPredicted'] = y_final
     df_out = X_final[['ListingID', 'TrimPredicted']] 
 
-    return df_out
+    confusion = confusion_matrix(y_test, y_hat)
+    # Metrics for Confusion Matrices
+    accuracy = accuracy_score(y_test, y_hat)
+    precision = precision_score(y_test, y_hat, average='macro')
+    recall = recall_score(y_test, y_hat, average='macro')
+    f1 = f1_score(y_test, y_hat, average='macro')
+
+    print(f'Accuracy: {accuracy}\nPrecsision : {precision}\nRecal : {recall}\nF1 : {f1}')
+    print(confusion)
+
+    return df_out, df_test_out
 
     
 
