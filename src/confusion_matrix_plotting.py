@@ -1,18 +1,28 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 
 
-def create_cm_plot(confusion, state):
+def create_cm_plot(y_test, y_hat):
+    '''
+    This function simply plots the results from XGBoost Classifier
+    confusion matrix.
 
-    # Basic Metric for classification, unbalanced data though
-    accuracy  = int((np.trace(confusion) / float(np.sum(confusion)))*100)
-    # Metrics for Binary Confusion Matrices, better for unbalanced
-    precision = (confusion[1,1] / sum(confusion[:,1]))*100
-    recall    = (confusion[1,1] / sum(confusion[1,:]))*100
-    f1_score  = 2*precision*recall / (precision + recall)
+    Input: Y true values from the test data (y_test), and the 
+    Y predicted values from our model (y_hat)
+
+    Returns: Nothing, saves the image. 
+    '''
+    confusion = confusion_matrix(y_test, y_hat)
+    # Metrics for Confusion Matrices
+    accuracy = accuracy_score(y_test, y_hat)
+    precision = precision_score(y_test, y_hat, average='macro')
+    recall = recall_score(y_test, y_hat, average='macro')
+    f1 = f1_score(y_test, y_hat, average='macro')
+    
     stats_text = "\n\nAccuracy={:0.1f}%\nPrecision={:0.1f}%\nRecall={:0.1f}%\nF1 Score={:0.1f}%".format(
-        accuracy,precision,recall,f1_score)
+        accuracy,precision,recall,f1)
 
     # Plotting the confusion matrices
     group_names = ['True Neg', 'False Pos', 'False Neg' , 'True Pos']
@@ -34,8 +44,8 @@ def create_cm_plot(confusion, state):
     )
     plt.ylabel('True label')
     plt.xlabel('Predicted label' + stats_text)
-    plt.title(f'Confusion Matrix For {state} Results')
+    plt.title(f'Confusion Matrix For Trim Predictor')
     plt.tight_layout()
-    plt.savefig(f'../img/{state}/{state}_confusion_matrix.png', dpi=500, orientation='landscape');
+    plt.savefig(f'../img/confusion_matrix.png', dpi=500, orientation='landscape');
 
     return None

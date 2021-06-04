@@ -76,9 +76,6 @@ def preprocess(data):
 
     # Removing the Vehicle Make, since there is only one model per make
     df.drop(columns='VehMake', axis=1, inplace=True)
-
-    # Setting the ListingID as index
-    df.set_index('ListingID', inplace=True)
     
     return df
 
